@@ -3,6 +3,7 @@ import asyncio
 from aiohttp import web, WSMsgType
 
 from ts_server.service_api.generator import gen_normal_dist_number
+from ts_server.service_api.config import MSG_TIMEOUT, TICK_NUMBER_TIME
 
 
 class TSGeneratorView(web.View):
@@ -34,9 +35,9 @@ class TSGeneratorView(web.View):
         if not generator:
             generator = self.request.app.client_session_generators[client_id] = gen_normal_dist_number()
         while True:
-            await asyncio.sleep(1)
+            await asyncio.sleep(TICK_NUMBER_TIME)
             try:
-                message = await ws.receive_str(timeout=0.1)
+                message = await ws.receive_str(timeout=MSG_TIMEOUT)
                 if message == WSMsgType.CLOSE:
                     print('Websocket connection closed')
                     await ws.close()

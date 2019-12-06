@@ -1,6 +1,5 @@
 import os
 
-
 APP_HOST = os.getenv('HOST', '0.0.0.0')
 APP_PORT = int(os.getenv('PORT', 8082))
 
@@ -13,3 +12,6 @@ ACCESS_LOG_FORMAT = " :: %r %s %T %t"
 DATA_FILE_PATH = 'service_api/data/numbers.txt'
 
 RECORD_TEMPLATE = 'index: {index:>10} number: {number:>10} timestamp: {timestamp}'
+
+# time for producing one number by server
+TICK_NUMBER_TIME = 1

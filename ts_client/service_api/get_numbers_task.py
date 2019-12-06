@@ -7,7 +7,7 @@ from aiohttp import ClientSession, WSMsgType
 
 from .constants import CONST_MU, CONST_SIGMA
 from .app import buffer_numbers
-from .config import GENERATOR_URL, DATA_FILE_PATH
+from .config import GENERATOR_URL, DATA_FILE_PATH, TICK_NUMBER_TIME
 
 
 async def get_numbers_from_server(client_id='12345'):
@@ -45,7 +45,7 @@ async def get_numbers_from_server(client_id='12345'):
 
                     # frequency of generator is 1 number per second
                     # we leave this time for our application
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(TICK_NUMBER_TIME)
 
             print('Connection closed')
             return ws

@@ -4,7 +4,7 @@ import aiohttp_jinja2
 import asyncio
 
 from .app import buffer_numbers
-from .config import RECORD_TEMPLATE
+from .config import RECORD_TEMPLATE, TICK_NUMBER_TIME
 
 
 class TSPageView(web.View):
@@ -51,7 +51,7 @@ class TSWebsocketView(web.View):
                 )
                 await ws.send_str(msg_str)
             else:
-                await asyncio.sleep(1)
+                await asyncio.sleep(TICK_NUMBER_TIME)
 
         print('Websocket connection closed')
         return ws
