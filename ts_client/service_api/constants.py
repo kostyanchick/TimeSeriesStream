@@ -1,0 +1,2 @@
+CONST_MU = 0
+CONST_SIGMA = 1

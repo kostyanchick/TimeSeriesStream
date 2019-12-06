@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# logs
+*.log
+
+# Hidden directories and files
+.*
+!/.gitignore
+
+# Venv
+venv/
+env/

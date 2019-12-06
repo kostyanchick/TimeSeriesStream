@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TS Numbers</title>
+</head>
+<script>
+    window.onload = function () {
+        let hostname = window.location.host;
+        let wsPath = "ws://" + hostname + "/ws/ts_numbers";
+        let socket = new WebSocket(wsPath);
+
+        socket.onmessage = function (event) {
+            let incomingMessage = event.data;
+            showMessage(incomingMessage);
+        };
+
+        function showMessage(message) {
+            let messageElem = document.createElement('li');
+            messageElem.appendChild(document.createTextNode(message));
+            document.getElementById('messages').appendChild(messageElem);
+        }
+    }
+</script>
+<body>
+    <h1>Time series data:</h1>
+    <ol id="messages"></ol>
+</body>
+</html>
