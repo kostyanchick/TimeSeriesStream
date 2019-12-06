@@ -7,7 +7,7 @@ from aiohttp import ClientSession, WSMsgType
 
 from .constants import CONST_MU, CONST_SIGMA
 from .app import buffer_numbers
-from .config import GENERATOR_URL
+from .config import GENERATOR_URL, DATA_FILE_PATH
 
 
 async def get_numbers_from_server(client_id='12345'):
@@ -28,7 +28,7 @@ async def get_numbers_from_server(client_id='12345'):
             await ws.send_str(client_id)
 
             # receive and save numbers to log file
-            with open('ts_data.log', 'a', encoding='utf-8') as ts_log:
+            with open(DATA_FILE_PATH, 'a', encoding='utf-8') as ts_log:
                 async for msg in ws:
                     if msg.type in (WSMsgType.CLOSED, WSMsgType.ERROR):
                         break
@@ -39,7 +39,7 @@ async def get_numbers_from_server(client_id='12345'):
                     data_ = json.loads(msg.data)
                     data_.update({'timestamp': str(tst)})
                     # filter numbers
-                    if abs(data_['number'] - CONST_MU) >= 1 * CONST_SIGMA:
+                    if abs(data_['number'] - CONST_MU) >= 2 * CONST_SIGMA:
                         buffer_numbers.append(data_)
                         ts_log.write(f'{json.dumps(data_)} \n')
 

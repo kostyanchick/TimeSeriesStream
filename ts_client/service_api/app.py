@@ -8,7 +8,7 @@ from aiohttp import web
 from .config import DATA_FILE_PATH
 
 
-def read_numbers_from_log():
+def read_numbers_from_file():
     """Function is reading data already stored in the log"""
     buffer = []
     if os.path.exists(DATA_FILE_PATH):
@@ -17,6 +17,7 @@ def read_numbers_from_log():
             for line in file_content:
                 record = json.loads(line)
                 buffer.append(record)
+
     return buffer
 
 
@@ -26,7 +27,7 @@ def read_numbers_from_log():
 # list is initialized from already saved data
 # and continuously fulfilled by received from server
 # this approach helps to handle cases when client stopped working
-buffer_numbers = read_numbers_from_log()
+buffer_numbers = read_numbers_from_file()
 
 # this loop is used by both api and task for receiving data from server
 loop = asyncio.get_event_loop()
