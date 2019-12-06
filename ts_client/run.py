@@ -1,9 +1,9 @@
 from aiohttp import web
 
-from ts_client.service_api.get_numbers_task import get_numbers_from_server
-from ts_client.service_api.app import app, loop
-from ts_client.service_api.api import load_api
-from ts_client.service_api.config import APP_HOST, APP_PORT, ACCESS_LOG_FORMAT
+from service_api.get_numbers_task import get_numbers_from_server
+from service_api.app import app, loop
+from service_api.api import load_api
+from service_api.config import APP_HOST, APP_PORT, ACCESS_LOG_FORMAT
 
 
 if __name__ == '__main__':

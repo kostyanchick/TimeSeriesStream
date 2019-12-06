@@ -2,8 +2,8 @@ import asyncio
 
 from aiohttp import web, WSMsgType
 
-from ts_server.service_api.generator import gen_normal_dist_number
-from ts_server.service_api.config import MSG_TIMEOUT, TICK_NUMBER_TIME
+from .generator import gen_normal_dist_number
+from .config import MSG_TIMEOUT, TICK_NUMBER_TIME
 
 
 class TSGeneratorView(web.View):

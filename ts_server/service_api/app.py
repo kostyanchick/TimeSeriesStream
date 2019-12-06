@@ -3,7 +3,7 @@ import logging
 
 from aiohttp import web
 
-from ts_server.service_api.websocket_view import TSGeneratorView
+from .websocket_view import TSGeneratorView
 
 
 class TSGeneratorApp(web.Application):
