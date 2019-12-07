@@ -17,13 +17,17 @@
 
         function showMessage(message) {
             let messageElem = document.createElement('li');
-            messageElem.appendChild(document.createTextNode(message));
+            let preform_text = document.createElement('pre')
+            preform_text.appendChild(document.createTextNode(message));
+            messageElem.appendChild(preform_text);
             document.getElementById('messages').appendChild(messageElem);
         }
     }
 </script>
 <body>
-    <h1>Time series data:</h1>
-    <ol id="messages"></ol>
+    <div align="center" style="margin:0">
+        <h2 align="center">Time series data:</h2>
+        <ol id="messages" style="display:inline-block"></ol>
+    </div>
 </body>
 </html>
