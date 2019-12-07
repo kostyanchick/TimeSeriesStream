@@ -4,53 +4,64 @@ import asyncio
 
 
 from aiohttp import ClientSession, WSMsgType
+from aiohttp.client_exceptions import ClientConnectionError
 
-from .constants import CONST_MU, CONST_SIGMA
+from .constants import CONST_MU, CONST_SIGMA, CONST_COEFF
 from .app import buffer_numbers
-from .config import GENERATOR_URL, DATA_FILE_PATH, TICK_NUMBER_TIME
+from .config import GENERATOR_URL, DATA_FILE_PATH, TICK_NUMBER_TIME, CONNECTION_RETRY_PERIOD, CLIENT_ID
 
 
-async def get_numbers_from_server(client_id='12345'):
+async def get_numbers_from_server(client_id=CLIENT_ID):
     """This function ran asynchronously with the web application in the same loop
     It continuously getting data from server
-    storing numbers in file and pushing it to shared buffer
+    storing numbers in file and pushing it to shared buffer.
+    If connection with server lost,
+    function will retry during period set in config
 
     client_id could be used to manage several clients by server
     with a specific time series data for every client
     """
 
-    async with ClientSession() as session:
+    while True:
         try:
-            ws = await session.ws_connect(GENERATOR_URL)
-            print('Successfully connected to server')
+            # continuously receive data until connection lost or client stopped
+            async with ClientSession() as session:
+                ws = await session.ws_connect(GENERATOR_URL)
+                print('Successfully connected to server')
 
-            # send client id to the server
-            await ws.send_str(client_id)
+                await receive_data(ws, client_id)
 
-            # receive and save numbers to log file
-            with open(DATA_FILE_PATH, 'a', encoding='utf-8') as ts_log:
-                async for msg in ws:
-                    if msg.type in (WSMsgType.CLOSED, WSMsgType.ERROR):
-                        break
+                print('Connection closed')
+                return ws
 
-                    tst = datetime.utcnow()
+        except ClientConnectionError:
+            print(f'Error when tried connect to server. '
+                  f'Trying to reconnect in {CONNECTION_RETRY_PERIOD}s')
+            await asyncio.sleep(CONNECTION_RETRY_PERIOD)
+            continue
 
-                    print(f'[{tst}] Message received from server: {msg}',)
-                    data_ = json.loads(msg.data)
-                    data_.update({'timestamp': str(tst)})
-                    # filter numbers
-                    if abs(data_['number'] - CONST_MU) >= 2 * CONST_SIGMA:
-                        buffer_numbers.append(data_)
-                        ts_log.write(f'{json.dumps(data_)} \n')
 
-                    # frequency of generator is 1 number per second
-                    # we leave this time for our application
-                    await asyncio.sleep(TICK_NUMBER_TIME)
+async def receive_data(ws, client_id):
+    # send client id to the server
+    await ws.send_str(client_id)
 
-            print('Connection closed')
-            return ws
+    # receive and save numbers to log file
+    with open(DATA_FILE_PATH, 'a', encoding='utf-8') as ts_log:
+        async for msg in ws:
+            if msg.type in (WSMsgType.CLOSED, WSMsgType.ERROR):
+                break
 
-        # catch the case when connection was closed improperly
-        except Exception as ex:
-            print(f'During websocket connection occurred an exception '
-                  f'{type(ex).__name__}')
+            tst = datetime.utcnow()
+
+            print(f'[{tst}] Message received from server: {msg}',)
+            data_ = json.loads(msg.data)
+            data_.update({'timestamp': str(tst)})
+            # filter numbers
+            if abs(data_['number'] - CONST_MU) >= CONST_COEFF * CONST_SIGMA:
+                buffer_numbers.append(data_)
+                ts_log.write(f'{json.dumps(data_)} \n')
+
+            # frequency of generator is 1 number per second
+            # we leave this time for our application
+            await asyncio.sleep(TICK_NUMBER_TIME)
+

@@ -34,24 +34,28 @@ class TSWebsocketView(web.View):
         """Method uses custom generator to get data from buffer as it received
         and send it to the web-page client"""
 
-        gen_for_ws = self.waiting_generator(buffer_numbers)
-
         print('Websocket connection starting')
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
         print('Websocket connection ready')
+        try:
+            gen_for_ws = self.waiting_generator(buffer_numbers)
+            while True:
+                record = next(gen_for_ws)
+                if record:
+                    msg_str = RECORD_TEMPLATE.format(
+                        index=record['index'],
+                        number=record['number'],
+                        timestamp=record['timestamp']
+                    )
+                    await ws.send_str(msg_str)
+                else:
+                    await asyncio.sleep(TICK_NUMBER_TIME)
+        except Exception as ex:
+            await ws.close()
+            print(f'Websocket connection closed with exception '
+                  f'{ex.__class__.__name__}')
+        finally:
+            await ws.close()
 
-        while True:
-            record = next(gen_for_ws)
-            if record:
-                msg_str = RECORD_TEMPLATE.format(
-                    index=record['index'],
-                    number=record['number'],
-                    timestamp=record['timestamp']
-                )
-                await ws.send_str(msg_str)
-            else:
-                await asyncio.sleep(TICK_NUMBER_TIME)
-
-        print('Websocket connection closed')
         return ws
