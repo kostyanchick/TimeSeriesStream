@@ -5,6 +5,10 @@ __pycache__/
 # logs
 *.log
 
+# data file
+*.txt
+!requirements.txt
+
 # Hidden directories and files
 .*
 !/.gitignore

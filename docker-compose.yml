@@ -1,0 +1,26 @@
+version: '3'
+services:
+  ts-server:
+    build: ./ts_server
+    container_name: ts_server
+    ports:
+      - "8081:8081"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8081
+
+  ts-client:
+    build: ./ts_client
+    container_name: ts_client
+    ports:
+      - "8082:8082"
+    # volume for stored numbers
+    volumes:
+      - ./volume_data/:/app/service_api/data
+    depends_on:
+      - ts-server
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8082
+      - GENERATOR_HOST=ts-server
+      - GENERATOR_PORT=8081
