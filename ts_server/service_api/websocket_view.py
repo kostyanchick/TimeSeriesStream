@@ -72,7 +72,7 @@ class TSGeneratorView(web.View):
 
         # catch the case when connection was closed improperly
         except Exception as ex:
-            print(f'Websocket connection closed improperly with exception '
+            print(f'Websocket connection closed with exception '
                   f'{type(ex).__name__}')
         finally:
             await ws.close()
