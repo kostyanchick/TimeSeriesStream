@@ -11,6 +11,8 @@ store records in file and streams it to the web page trough web-sockets
 
 Client depends on server, but if server lost connection with client -
 it will save the state of time series for current client. 
+When client connection to server is failed it will retry after 
+period set in config.
 By default server uses port 8081 and client uses 8082
 
 ***
